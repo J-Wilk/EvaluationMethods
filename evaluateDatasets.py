@@ -86,14 +86,14 @@ def main(argv):
 	rmStopwords = True
 	rmPunct = True
 	lemmatize = False
-	baseLineMethod = 'word2vecCosine' # Grouped options: 'word2vec', 'wordCrossover', 
+	baseLineMethod = 'wordCrossover' # Grouped options: 'word2vec', 'wordCrossover', 
 	#'random', OFM options: 'word2vecWordSim', 'word2vecCosine', 'wordCrossover', 'random'
 	groupedAccuracyMeasure = 'total' # Options: 'total', 'pairs'
 	testItterations = 50
 	numOfSenses = 3
 	numOfExamp = 2
 	startTime  = time.time()
-	dictionary = 'oxford' # Options: 'collins', 'semcor', 'oxford'
+	dictionary = 'semcor' # Options: 'collins', 'semcor', 'oxford'
 	pos = 'Noun'
 	seed(seedNo)
 	print('Remove stop words: {} Remove punctuation: {} Lemmatize: {}'.format(rmStopwords, rmPunct, lemmatize))	
@@ -113,6 +113,7 @@ def main(argv):
 
 	model = None
 	if 'word2vec' in baseLineMethod:
+		# GoogleNews-vectors.bin available at https://code.google.com/archive/p/word2vec/
 		model = Word2Vec.load_word2vec_format('GoogleNews-vectors.bin', binary=True)
 
 	total = []	
@@ -132,22 +133,3 @@ def main(argv):
 if __name__ == '__main__':
 	main(argv[1:])		
 		
-# Remove stopwords and two part words from the word list and the datasets - done
-# Ensure the current Oxford reader is the correct one i.e. the one actually used - done
-# Semcor word count is not by part of speach while the COCA is, this may be a problem should this be changed - done
-# Add the extra data when the data is being collected rather than afterwards - done
-# Ensure the extra data is being copied over when data selection happens - done
-# Tidy up pipline - ?
-# Need to consider if everything is lowercase for example all the words in the word lists (all but one word is and converting to lower case when looking at semcor words)
-# Think about how larger PoS are being delt with i.e NNP become NN - I think this is ok
-# Make a call to both oxford and collins API to check they work - done
-# Tidy up and comment code - 10, 4-5
-# update save methods - done
-# ensure output and loading of a set dataset works - done
-# Ensure code is fully tested - fully probably not, but mostly
-# build framework to make single API calls? 
-# add data selection on metadata
-# update evaluation scores !!!!
-# place into a new file and create new git !!!!
-# Write up work done into a short report
-# Hand over to Julie 
