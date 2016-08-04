@@ -19,7 +19,7 @@ def loadAmbigWordList():
 	Returns:
 	A list of highly ambiguous words.
 	"""
-	ambigWordsFile = open('ambiguousWordList', 'r')
+	ambigWordsFile = open('wl_and_freq_data/ambiguousWordList', 'r')
 	wordList = [line.split(', ') for line in ambigWordsFile]
 	ambigWordsFile.close()
 	return wordList[0]
@@ -31,7 +31,7 @@ def loadFreqWordList():
 	Returns:
 	List of words in the Oxford 1000 most used words list.
 	"""
-	freqWordFile = open('topUsedWords', 'r')
+	freqWordFile = open('wl_and_freq_data/topUsedWords', 'r')
 	wordList = [line[:-1] for line in freqWordFile]
 	freqWordFile.close()
 	return wordList

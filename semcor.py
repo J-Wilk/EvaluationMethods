@@ -9,9 +9,12 @@ from re import sub
 class SemcorWordExtraction:
 
 	def __init__(self):
-		self.freqListCOCA = pickle.load(open('wordFreqData', 'rb'))
-		self.semcorSynsetFreq = pickle.load(open('semcorWordSenseCount', 'rb'))
-		self.semcorWordFreq = pickle.load(open('semcorWordFreqcount', 'rb'))		
+		self.freqListCOCA = pickle.load(
+			open('wl_and_freq_data/wordFreqData', 'rb'))
+		self.semcorSynsetFreq = pickle.load(
+			open('wl_and_freq_data/semcorWordSenseCount', 'rb'))
+		self.semcorWordFreq = pickle.load(
+			open('wl_and_freq_data/semcorWordFreqcount', 'rb'))		
 
 	def extractWordSenses(self, wordList):
 		"""

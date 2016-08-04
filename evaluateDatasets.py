@@ -1,7 +1,6 @@
 
 from sys import argv
 from sys import exit
-from pearson import PearsonAPIAccess
 import loadAndSave as sl
 import dataSelection as ds
 from baseLinePredictions import OFMPredictions
@@ -83,7 +82,8 @@ def main(argv):
 	"""
 	Runs evaluation of a prediction technique on a selected evaluation problem
 	from a selected dataset. Runs the evaluation multiple times and prints stats
-	to output. Parameters are se tat the top of this method.
+	to output. Takes as an argument the file path to a configeration file that
+	is used to set the parameters of the evaluation.
 	"""
 
 	startTime  = time.time()
@@ -98,11 +98,11 @@ def main(argv):
 	#print('Remove stop words: {} Remove punctuation: {} Lemmatize: {}'.format(rmStopwords, rmPunct, lemmatize))	
 	dictionary = parser.get('evaluation_params', 'dictionary').lower()
 	if dictionary == 'collins':
-		evaluationData = sl.loadDataFromFile('collinsExtra')
+		evaluationData = sl.loadDataFromFile('dictionaryData/collinsExtra')
 	elif dictionary == 'oxford':
-		evaluationData = sl.loadDataFromFile('oxfordExtra')
+		evaluationData = sl.loadDataFromFile('dictionaryData/oxfordExtra')
 	elif dictionary == 'semcor':
-		evaluationData = sl.loadDataFromFile('semcorExtra')
+		evaluationData = sl.loadDataFromFile('dictionaryData/semcorExtra')
 	
 	evaluationData = ds.selectPoS(evaluationData, parser.get('evaluation_params', 'pos'))
 	evaluationData = ds.removeWordsWithTooFewSenses(evaluationData, 

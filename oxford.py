@@ -4,10 +4,12 @@ import requests
 
 class OxfordAPIAccess:
 	def __init__(self):
-		self.keyList = pickle.load(open('apiKeys', 'rb'))
-		self.freqListCOCA = pickle.load(open('wordFreqData', 'rb'))
-		self.semcorSynsetFreq = pickle.load(open('semcorWordSenseCount', 'rb'))
-		self.semcorWordFreq = pickle.load(open('semcorWordFreqcount', 'rb'))
+		self.freqListCOCA = pickle.load(
+			open('wl_and_freq_data/wordFreqData', 'rb'))
+		self.semcorSynsetFreq = pickle.load(
+			open('wl_and_freq_data/semcorWordSenseCount', 'rb'))
+		self.semcorWordFreq = pickle.load(
+			open('wl_and_freq_data/semcorWordFreqcount', 'rb'))	
 
 	def makeRequestForWord(self, word):
 		"""
