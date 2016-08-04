@@ -1,5 +1,6 @@
 
 from sys import argv
+from sys import exit
 from pearson import PearsonAPIAccess
 import loadAndSave as sl
 import dataSelection as ds
@@ -11,7 +12,8 @@ from copy import deepcopy
 from random import seed
 from numpy import std
 from numpy import mean
-from ConfigParser import SafeConfigParser 
+from ConfigParser import SafeConfigParser
+from configValidation import validateConfigFile 
 import time
 
 def runGroupedTest(data, method, model, accuracyMeasure):
@@ -76,19 +78,25 @@ def runOFMTest(data, method, model):
 		selections = ofmPredictor.word2VecSimilaritySelectionCosine(ofmData, model)		
 	return ofmPredictor.calculateAccuracy(selections, ofmData)
 
+
 def main(argv):
 	"""
 	Runs evaluation of a prediction technique on a selected evaluation problem
 	from a selected dataset. Runs the evaluation multiple times and prints stats
 	to output. Parameters are se tat the top of this method.
 	"""
+
 	startTime  = time.time()
 	parser = SafeConfigParser()
-	parser.read('config_files/config.txt')
+	parser.read(argv[0])
 	
+	validConfig = validateConfigFile(parser)
+	if not validConfig:
+		exit()
+
 	seed(parser.getint('evaluation_params', 'seedNo'))
 	#print('Remove stop words: {} Remove punctuation: {} Lemmatize: {}'.format(rmStopwords, rmPunct, lemmatize))	
-	dictionary = parser.get('evaluation_params', 'dictionary')
+	dictionary = parser.get('evaluation_params', 'dictionary').lower()
 	if dictionary == 'collins':
 		evaluationData = sl.loadDataFromFile('collinsExtra')
 	elif dictionary == 'oxford':
@@ -96,29 +104,27 @@ def main(argv):
 	elif dictionary == 'semcor':
 		evaluationData = sl.loadDataFromFile('semcorExtra')
 	
-	print(len(evaluationData))
 	evaluationData = ds.selectPoS(evaluationData, parser.get('evaluation_params', 'pos'))
-	print(len(evaluationData))
 	evaluationData = ds.removeWordsWithTooFewSenses(evaluationData, 
 		parser.getint('evaluation_params', 'numOfSenses'), 
 		parser.getint('evaluation_params', 'numOfExamp'))
-	print(len(evaluationData))
 	evaluationData= ds.examplesToLowerCase(evaluationData)
-	print(len(evaluationData))
 	evaluationData = ds.tokenizeAndLemmatizeExamples(evaluationData,
 		parser.getboolean('evaluation_params', 'lemmatize'))
-	print(len(evaluationData))
 	evaluationData = ds.removeStopwordsAndPunct(evaluationData, 
 		parser.getboolean('evaluation_params', 'rmStopwords'), 
 		parser.getboolean('evaluation_params', 'rmPunct'))
-
-	print(len(evaluationData))
 
 	model = None
 	if 'word2vec' in parser.get('evaluation_params', 'baseLineMethod'):
 		# GoogleNews-vectors.bin available at https://code.google.com/archive/p/word2vec/
 		model = Word2Vec.load_word2vec_format(parser.get('evaluation_params', 
 			'word2vecBin'), binary=True)
+
+	if len(evaluationData) < 1:
+		print('Insufficient data to run evaluation. Try lowering the number ' + 
+			'of sense or examples required and try again.')
+		exit()		
 
 	total = []	
 	for i in range(parser.getint('evaluation_params', 'testItterations')):	
