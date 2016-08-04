@@ -10,7 +10,8 @@ from gensim.models import Word2Vec
 from copy import deepcopy
 from random import seed
 from numpy import std
-from numpy import mean 
+from numpy import mean
+from ConfigParser import SafeConfigParser 
 import time
 
 def runGroupedTest(data, method, model, accuracyMeasure):
@@ -81,48 +82,56 @@ def main(argv):
 	from a selected dataset. Runs the evaluation multiple times and prints stats
 	to output. Parameters are se tat the top of this method.
 	"""
-	seedNo = 100
-	grouped = False
-	rmStopwords = True
-	rmPunct = True
-	lemmatize = False
-	baseLineMethod = 'wordCrossover' # Grouped options: 'word2vec', 'wordCrossover', 
-	#'random', OFM options: 'word2vecWordSim', 'word2vecCosine', 'wordCrossover', 'random'
-	groupedAccuracyMeasure = 'total' # Options: 'total', 'pairs'
-	testItterations = 50
-	numOfSenses = 3
-	numOfExamp = 2
 	startTime  = time.time()
-	dictionary = 'semcor' # Options: 'collins', 'semcor', 'oxford'
-	pos = 'Noun'
-	seed(seedNo)
-	print('Remove stop words: {} Remove punctuation: {} Lemmatize: {}'.format(rmStopwords, rmPunct, lemmatize))	
-
-	if dictionary == 'collins':
-		dataset = sl.loadDataFromFile('collinsExtra')
-	elif dictionary == 'oxford':
-		dataset = sl.loadDataFromFile('oxfordExtra')
-	elif dictionary == 'semcor':
-		dataset = sl.loadDataFromFile('semcorExtra')
+	parser = SafeConfigParser()
+	parser.read('config_files/config.txt')
 	
-	dataset = ds.selectPoS(dataset, pos)
-	dataset = ds.removeWordsWithTooFewSenses(dataset, numOfSenses, numOfExamp)
-	dataset = ds.examplesToLowerCase(dataset)
-	dataset = ds.tokenizeAndLemmatizeExamples(dataset, lemmatize)
-	dataset = ds.removeStopwordsAndPunct(dataset, rmStopwords, rmPunct)
+	seed(parser.getint('evaluation_params', 'seedNo'))
+	#print('Remove stop words: {} Remove punctuation: {} Lemmatize: {}'.format(rmStopwords, rmPunct, lemmatize))	
+	dictionary = parser.get('evaluation_params', 'dictionary')
+	if dictionary == 'collins':
+		evaluationData = sl.loadDataFromFile('collinsExtra')
+	elif dictionary == 'oxford':
+		evaluationData = sl.loadDataFromFile('oxfordExtra')
+	elif dictionary == 'semcor':
+		evaluationData = sl.loadDataFromFile('semcorExtra')
+	
+	print(len(evaluationData))
+	evaluationData = ds.selectPoS(evaluationData, parser.get('evaluation_params', 'pos'))
+	print(len(evaluationData))
+	evaluationData = ds.removeWordsWithTooFewSenses(evaluationData, 
+		parser.getint('evaluation_params', 'numOfSenses'), 
+		parser.getint('evaluation_params', 'numOfExamp'))
+	print(len(evaluationData))
+	evaluationData= ds.examplesToLowerCase(evaluationData)
+	print(len(evaluationData))
+	evaluationData = ds.tokenizeAndLemmatizeExamples(evaluationData,
+		parser.getboolean('evaluation_params', 'lemmatize'))
+	print(len(evaluationData))
+	evaluationData = ds.removeStopwordsAndPunct(evaluationData, 
+		parser.getboolean('evaluation_params', 'rmStopwords'), 
+		parser.getboolean('evaluation_params', 'rmPunct'))
+
+	print(len(evaluationData))
 
 	model = None
-	if 'word2vec' in baseLineMethod:
+	if 'word2vec' in parser.get('evaluation_params', 'baseLineMethod'):
 		# GoogleNews-vectors.bin available at https://code.google.com/archive/p/word2vec/
-		model = Word2Vec.load_word2vec_format('GoogleNews-vectors.bin', binary=True)
+		model = Word2Vec.load_word2vec_format(parser.get('evaluation_params', 
+			'word2vecBin'), binary=True)
 
 	total = []	
-	for i in range(testItterations):	
-		dataSelected = ds.selectExamplesAndSenses(dataset, numOfSenses, numOfExamp)
-		if grouped:
-			total.append(runGroupedTest(dataSelected, baseLineMethod, model, groupedAccuracyMeasure))
+	for i in range(parser.getint('evaluation_params', 'testItterations')):	
+		dataSelected = ds.selectExamplesAndSenses(evaluationData, 
+			parser.getint('evaluation_params', 'numOfSenses'), 
+			parser.getint('evaluation_params', 'numOfExamp'))
+		if parser.getboolean('evaluation_params', 'grouped'):
+			total.append(runGroupedTest(dataSelected, 
+				parser.get('evaluation_params', 'baseLineMethod'), model, 
+				parser.get('evaluation_params', 'groupedAccuracyMeasure')))
 		else:
-			total.append(runOFMTest(dataSelected, baseLineMethod, model))			
+			total.append(runOFMTest(dataSelected, 
+				parser.get('evaluation_params', 'baseLineMethod'), model))			
 			
 	print('Average: {}'.format(mean(total)))
 	print('Maximum: {}'.format(max(total)))
