@@ -1,0 +1,14 @@
+[evaluation_params]
+seedNo = 100
+grouped = False
+rmStopwords = True
+rmPunct = True
+lemmatize = False
+baseLineMethod = wordCrossover 
+groupedAccuracyMeasure = total 
+testItterations = 50
+numOfSenses = 3
+numOfExamp = 2
+dictionary = semcor 
+pos = Noun
+word2vecBin = GoogleNews-vectors.bin
