@@ -1,5 +1,16 @@
 
 def validateConfigFile(configFileParser):
+	"""
+	Validates a configuration file for evaluateDatasets.py
+
+	Args:
+	configFileParser: Is a ConfigParser that has read the config file to
+	be validated.
+
+	Returns:
+	True if the configuration file meets the validation else Flase. 
+
+	"""
 	intsValid = validateInt(configFileParser)
 	boolsValid = validateBoolean(configFileParser)
 	if not intsValid or not boolsValid:
@@ -14,6 +25,17 @@ def validateConfigFile(configFileParser):
 	return True	
 
 def validateBoolean(parser):
+	"""
+	Checks that all values that should be boolean are booleans.
+
+	Args:
+	parser: Is a ConfigParser that has read the config file to
+	be validated.
+
+	Returns:
+	True if all values that should be boolean are boolean else False.
+
+	"""
 	allValid = True
 	boolKeys = ['grouped', 'rmStopwords', 'rmPunct', 'lemmatize']
 	for key in boolKeys:
@@ -25,6 +47,17 @@ def validateBoolean(parser):
 	return allValid
 
 def validateInt(parser):
+	"""
+	Checks that all values that should be integer values are integer.
+
+	Args:
+	parser: Is a ConfigParser that has read the config file to
+	be validated.
+
+	Returns:
+	True if all values that should be integer are integer else False.
+
+	"""
 	allValid = True
 	intKeys = ['numOfSenses', 'numOfExamp', 'testItterations', 'seedNo']
 	for key in intKeys:
@@ -36,6 +69,19 @@ def validateInt(parser):
 	return allValid	
 
 def validateBaseLineMethod(parser):
+	"""
+	Checks that the base line method seclected is a valid selection based
+	on the evaluation problem selected. Also checks if grouped evaluation
+	problem is selected that a suitable accuracy measure has been selected.
+
+	Args:
+	parser: Is a ConfigParser that has read the config file to
+	be validated.
+
+	Returns:
+	True if the baseline method selected is valid and False otherwise.
+
+	"""
 	grouped = parser.getboolean('evaluation_params', 'grouped')
 	if grouped:
 		validBaseLines = ['random', 'wordCrossover', 'word2vec']
@@ -65,6 +111,17 @@ def validateBaseLineMethod(parser):
 	return True
 
 def validatePos(parser):
+	"""
+	Validates the parts of speach value.
+
+	Args:
+	parser: Is a ConfigParser that has read the config file to
+	be validated.
+
+	Returns:
+	True if pos value is 'Noun', 'Verb', 'Adverb' or 'Adjective' and False
+	otherwise.
+	"""
 	validPos = ['Noun', 'Verb', 'Adverb', 'Adjective']
 	pos = parser.get('evaluation_params', 'pos')
 	if pos not in validPos:
@@ -74,6 +131,19 @@ def validatePos(parser):
 	return True
 
 def validateSenseAndExampNum(parser):
+	"""
+	Checks that the number of examples is at least 2 and the number of senses 
+	is at least 3. If a grouped evaluation is selected the number of 
+	senses is either 3 or 4 and the number of examples matches.
+
+	Args:
+	parser: Is a ConfigParser that has read the config file to
+	be validated.
+
+	Returns:
+	True is valid sense number and example number.
+
+	"""
 	senseNum = parser.getint('evaluation_params', 'numOfSenses') 
 	exampNum = parser.getint('evaluation_params', 'numOfExamp')
 	grouped = parser.getboolean('evaluation_params', 'grouped')
