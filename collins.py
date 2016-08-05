@@ -1,4 +1,5 @@
 from nltk.corpus import wordnet as wn 
+from ConfigParser import SafeConfigParser
 import xml.etree.ElementTree as ET
 import cPickle as pickle
 import requests
@@ -7,6 +8,9 @@ import re
 
 class CollinsAPIAccess:
 	def __init__(self):
+		self.parser = SafeConfigParser()
+		self.parser.read('data/apiKeys.txt')
+		self.keyList = pickle.load(open('data/apiKeys', 'rb'))
 		self.freqListCOCA = pickle.load(
 			open('wl_and_freq_data/wordFreqData', 'rb'))
 		self.semcorSynsetFreq = pickle.load(
@@ -36,7 +40,7 @@ class CollinsAPIAccess:
 				url = "https://api.collinsdictionary.com/api/v1/dictionaries/english-learner/entries/"\
 				+ entry + "?format=xml"
 				header = { "Accept":"application/json",
-					"accessKey": self.keyList['collins']['key']
+					"accessKey": self.parser.get('api_keys', 'collins_key')
 				}
 				response = requests.get(url, headers=header)
 				if response.status_code == 200:

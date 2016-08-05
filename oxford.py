@@ -1,9 +1,12 @@
-from nltk.corpus import wordnet as wn 
+from nltk.corpus import wordnet as wn
+from ConfigParser import SafeConfigParser 
 import cPickle as pickle
 import requests
 
 class OxfordAPIAccess:
 	def __init__(self):
+		self.parser = SafeConfigParser()
+		self.parser.read('data/apiKeys.txt')
 		self.freqListCOCA = pickle.load(
 			open('wl_and_freq_data/wordFreqData', 'rb'))
 		self.semcorSynsetFreq = pickle.load(
@@ -30,8 +33,8 @@ class OxfordAPIAccess:
 		url = 'https://od-api-2445581300291.apicast.io:443/api/v1/entries/en/'\
 		+ word + '?include=lexicalCategory'
 		header = { "Accept": "application/json",
-	  			"app_id": self.keyList['oxford']['appID'],
-	  			"app_key": self.keyList['oxford']['key']}
+	  			"app_id": self.parser.get('api_keys', 'oxford_app_id'),
+	  			"app_key": self.parser.get('api_keys', 'oxford_key')}
 		response = requests.get(url, headers = header)
 		if response.status_code == 200:
 			tempDict = response.json()
