@@ -90,7 +90,7 @@ groupedAccuracyMeasure = total
 testItterations = 50   
 numOfSenses = 3    
 numOfExamp = 2  
-dictionary = oxford   
+dictionary = oxfordExtra   
 pos = Noun   
 word2vecBin = models/GoogleNews-vectors.bin  
 
@@ -112,11 +112,40 @@ Other keys can be used to add metadata to a sense entry.*
 **pos** *The part of speach to be selected for the data before predictions are made. Options are 'Noun', 'Verb', 'Adverb' and 'Adjective'.*   
 **word2vecBin** *The file path to the binary file used to load the model for word2vec based predictions. A model trained on Google news articles was used and is available [here](https://code.google.com/archive/p/word2vec/).*    
 
-##### Grouped prediction methods
-
+### Selection methods
+Below is a brief overview of how the current prediction methods work.  
 ##### Select one sentence from many options prediction methods
+**random** Makes a random selection from the list of option sentences to be the solution to the problem.   
+
+**wordCrossover** Scores each of the option sentences using the below similarity measure where *E* is the example sentence as a list of tokens and *Y* is one of the sentences from the list of options as a list of tokens.     
+![alt text][wordCrossover]  
+Once all sentences have been scored select the one with the highest score as the solution.
+
+**word2vecCosine** Word2vec based predictions require a trained word2vec model this is referenced just as model in the below similarity measures. This prediction method sums the vectors for each token in the example sentence into a single vector. It does the same for each of the sentences in the options list. The cosine distance is then calculated between the example sentence vector and each of the option sentence vectors and the one that is closest in distance to the example sentence is selected as the solution to the problem.
+![alt text][word2vecCosine]
+
+**word2vecWordSim** As mentioned above a trained word2vec model is required. The similarity is found in this prediction by summing the similarity of each token in the example sentence with every token in the option sentence. Once this has been done for all of the option sentences the one with the highest similarity score is selected as the solution.  
+![alt text][word2vecWordSim]
+
+[wordCrossover]: https://cloud.githubusercontent.com/assets/10740510/17437469/d09c428e-5b15-11e6-96db-3d8a950fc143.png
+[word2vecCosine]: https://cloud.githubusercontent.com/assets/10740510/17437471/d0a55cb6-5b15-11e6-8145-085d016e1262.png
+[word2vecWordSim]: https://cloud.githubusercontent.com/assets/10740510/17437468/d09b7da4-5b15-11e6-88fc-bb0b2f963bfd.png
+
+##### Grouped prediction methods
+**random** Randomly shuffles the list of sentences and then splits into the correct number of groups of the correct size.
+
+**wordCrossover** Scores the similarity between all sentences in the list using the similarity measure below where E and Y and both sentences in the list in a tokenised version. Then a brute force approach is taken by creating all possible groupings. Each grouping is then scored using the cumulative similarity scores and the grouping that scores the highest is selected as the solution.  
+![alt text][wordCrossover]   
+
+**word2vec** Scores the similarity between each sentence by first converting each sentence into a single vector by summing the vectors for each token in a sentence using a word2vec model. Then calculates the cosine distance between each of the sentences as a single vector. Then uses a brute force approach in the same was as grouped wordCrossover to find the best possible grouping to be the solution.  ![alt text][word2vecCosine]
 
 ##### Grouped problem accuracy measures
+**total** All groups must be correct for the prediction to be marked correct. For example if the sentences are 'a' 'b' 'c' 'd' 'e' 'f' 'g' 'h' 'i' and the correct groups are [a, b, c] [d, e, f] [g, h, i] if the prediction was [a, b, c] [d, e, g] [f, h, i] these groups would get an accuracy of 0 as not all groups are correct. If however the prediction was [c, a, b] [g, i, h][d, f, e] these groups would get an accuracy of 1 as all groups are correct.
 
+**pairs** For every group find all pairs of sentences that should be in the same group. For example if the correct groupings were [a, b, c] [d, e, f] [g, h, i] the correct pairs would be 'ab' 'ac' 'bc' 'de' 'df' 'ef' 'gh' 'gi' 'hi'
+If the prediction was [b, c, e] [d, a, g] [f, i, h] then there would be 2 correct pairs 'bc' and 'ih'. The correct number of pairs is divided by the total number of pairs so the accuracy of the above example would be 2/9.  
+
+### Writing new prediction methods  
+It is worth noting that in the current framework the order of the sentences has not been shuffled when they arrive at the prediction method. Due to this the first thing a prediction method is required to do is to shuffle the sentences before begining predictions. It must be a copy that is shuffled as the accuracy measures requires the order to remain.   
 
 
