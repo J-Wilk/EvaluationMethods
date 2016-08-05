@@ -15,7 +15,7 @@ def main(argv):
 	in postion 0 and the name to save the dataset to in position 1. 
 	"""
 	dictionary = argv[0] 
-	fileNameToSaveTo = 'dictionaryData' + argv[1]
+	fileNameToSaveTo = 'dictionaryData/' + argv[1]
 	wordList = getWordList()
 	
 	if dictionary == 'oxford':
