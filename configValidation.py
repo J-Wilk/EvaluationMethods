@@ -2,8 +2,7 @@
 def validateConfigFile(configFileParser):
 	intsValid = validateInt(configFileParser)
 	boolsValid = validateBoolean(configFileParser)
-	dictValid = validateDictionary(configFileParser)
-	if not intsValid or not boolsValid or not dictValid:
+	if not intsValid or not boolsValid:
 		return False
 	
 	baseLineMethodValid = validateBaseLineMethod(configFileParser)
@@ -35,15 +34,6 @@ def validateInt(parser):
 			allValid = False
 			print('The value for key {} is not a valid integer.'.format(key))
 	return allValid	
-
-def validateDictionary(parser):
-	validDict = ['semcor', 'oxford', 'collins']
-	dictionary = parser.get('evaluation_params', 'dictionary').lower()
-	if dictionary not in validDict:
-		print(dictionary + ' is not a recognised dictionary. Valid entries are ' + 
-			'\'semcor\' \'collins\' \'oxford\'.')
-		return False
-	return True	
 
 def validateBaseLineMethod(parser):
 	grouped = parser.getboolean('evaluation_params', 'grouped')

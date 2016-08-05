@@ -96,13 +96,12 @@ def main(argv):
 
 	seed(parser.getint('evaluation_params', 'seedNo'))
 	#print('Remove stop words: {} Remove punctuation: {} Lemmatize: {}'.format(rmStopwords, rmPunct, lemmatize))	
-	dictionary = parser.get('evaluation_params', 'dictionary').lower()
-	if dictionary == 'collins':
-		evaluationData = sl.loadDataFromFile('dictionaryData/collinsExtra')
-	elif dictionary == 'oxford':
-		evaluationData = sl.loadDataFromFile('dictionaryData/oxfordExtra')
-	elif dictionary == 'semcor':
-		evaluationData = sl.loadDataFromFile('dictionaryData/semcorExtra')
+	dictionaryDataPath = parser.get('evaluation_params', 'dictionary')
+	try:
+		evaluationData = sl.loadDataFromFile('dictionaryData/' + dictionaryDataPath)
+	except IOError as err:
+		print(dictionaryDataParth + ' can not be found in the dictionaryData directory.')
+		exit()	
 	
 	evaluationData = ds.selectPoS(evaluationData, parser.get('evaluation_params', 'pos'))
 	evaluationData = ds.removeWordsWithTooFewSenses(evaluationData, 
@@ -117,7 +116,6 @@ def main(argv):
 
 	model = None
 	if 'word2vec' in parser.get('evaluation_params', 'baseLineMethod'):
-		# GoogleNews-vectors.bin available at https://code.google.com/archive/p/word2vec/
 		model = Word2Vec.load_word2vec_format(parser.get('evaluation_params', 
 			'word2vecBin'), binary=True)
 
