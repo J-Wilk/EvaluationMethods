@@ -3,8 +3,7 @@
 Evaluation methods provides two different evaluation methods. Both involve working with words that have multiple senses.
 
 ###The grouping evaluation problem.
-The first presents a list of sentences and the problem is to split those sentences into a fixed number of groups of a fixed size.
-For example if the word was 'head' you could have the following senteces:
+The grouping problem presents a list of sentences and the problem is to split those sentences into a fixed number of groups of a fixed size where each group shares the same sense for a given word. For example if the word was 'head' you could have the following sentences:  
 
 He got hit right in the head.  
 You will find my Dad sat at the head of the table.  
@@ -35,7 +34,7 @@ The head of the church controlled the power.
 The highest paid person was the head of sales.  
 I was pulled in by the head of HR.  
 
-So the first evaluation problem is to split a list of sentences mixed up into the groups shown below.
+So the first evaluation problem is to split a list of sentences mixed up into the correct sense groups.
 
 ###The select best matching sentence from options problem.
 The second evaluation problem while similar to the first has one example sentence and a list of option sentences. So using the 
@@ -55,21 +54,23 @@ problem involves selecting the sentence from the option list that uses the same 
 
 ###Instructions on useage
 ####Creating evaluation data
+Uses Python 2.7  
 In order to create a dataset you must have installed the following dependencies:  
 [NLTK 3.0](http://www.nltk.org)  
 *NLTK corpuses required: semcor, wordnet and stopwords.*  
 [Requests 2.10](http://docs.python-requests.org/en/master/)  
 
-In order to evaluate the problems described above a number of sentences are required. In order to build this data createDataset.py can be used. creadeDataset.py requires two command line arguments. The first is the name of the resource to aquire the data from, the current options are 'oxford', 'collins' or 'semcor'. In order to use 'oxford' or 'collins' you must have acquired an API key from either [Oxford Online](https://developer.oxforddictionaries.com) or [Collins Dictionary](https://www.collinsdictionary.com/api/). These keys are stored in a configuration file named 'apiKeys.txt' in the data directory in the following format:
+In order to evaluate the problems described above a number of sentences are required. In order to build this data createDataset.py can be used. creadeDataset.py requires two command line arguments. The first is the name of the resource to aquire the data from, the current options are 'oxford', 'collins' or 'semcor'. In order to use 'oxford' or 'collins' you must have acquired an API key from either [Oxford Online](https://developer.oxforddictionaries.com) or [Collins Dictionary](https://www.collinsdictionary.com/api/). These keys are stored in a configuration file named 'apiKeys.txt' in the data directory in the following format:  
 [api_keys]  
 oxford_app_id = *your Oxford app ID*  
 oxford_key = *your Oxford key*  
 collins_key = *your Collins key*
 
-The second argument is the name of the file that this new evaluation data will be saved as. This data will be saved in the dictionaryData directory. An example call to createDataset.py:
+The second argument is the name of the file that this new evaluation data will be saved as. This data will be saved in the dictionaryData directory. An example call to createDataset.py:  
 $ python createDataset.py oxford oxfordDictData
 
 ####Evaluating a dataset
+Uses Python 2.7  
 In order to evaluate a prediction model on a dataset you must have the installed the following dependencies:  
 [Gensim 0.13](https://radimrehurek.com/gensim/)  
 [Numpy 1.11](http://www.numpy.org)  
