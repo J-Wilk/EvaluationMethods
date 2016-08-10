@@ -74,7 +74,7 @@ def runOFMTest(data, method, model):
 	elif method == 'word2vecCosine':
 		selections = ofmPredictor.word2VecSimilaritySelectionCosine(ofmData, model)
 	elif method == 'word2vecWordSim':
-		selections = ofmPredictor.word2VecSimilaritySelectionCosine(ofmData, model)		
+		selections = ofmPredictor.word2VecSimilaritySelectionWordSim(ofmData, model)		
 	return ofmPredictor.calculateAccuracy(selections, ofmData)
 
 
@@ -85,7 +85,6 @@ def main(argv):
 	to output. Takes as an argument the file path to a configeration file that
 	is used to set the parameters of the evaluation.
 	"""
-
 	startTime  = time.time()
 	parser = SafeConfigParser()
 	parser.read(argv[0])
@@ -114,6 +113,8 @@ def main(argv):
 		parser.getboolean('evaluation_params', 'rmStopwords'), 
 		parser.getboolean('evaluation_params', 'rmPunct'))
 
+	print(len(evaluationData))
+	"""
 	model = None
 	if 'word2vec' in parser.get('evaluation_params', 'baseLineMethod'):
 		model = Word2Vec.load_word2vec_format(parser.get('evaluation_params', 
@@ -142,7 +143,7 @@ def main(argv):
 	print('Minimum: {}'.format(min(total)))
 	print('Standard deviation: {}'.format(std(total)))
 	print("{} seconds".format(time.time() - startTime))
-	
+	"""
 if __name__ == '__main__':
 	main(argv[1:])		
 		
